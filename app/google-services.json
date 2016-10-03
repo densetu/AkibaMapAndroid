@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1074331513431",
+    "firebase_url": "https://akibamap-a10a1.firebaseio.com",
+    "project_id": "akibamap-a10a1",
+    "storage_bucket": "akibamap-a10a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1074331513431:android:818f41d9f2d0599c",
+        "android_client_info": {
+          "package_name": "net.dentare.akibamapandroid"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1074331513431-7aqo7qp7sj5rdumff5la5jdh3uu034sa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "net.dentare.akibamapandroid",
+            "certificate_hash": "F915A93FDC7B0A405F67B378DA83F1A3EEA9BDFD"
+          }
+        },
+        {
+          "client_id": "1074331513431-0lip7p4s5eh96525deq1afntjoqoqk07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9AravtkCcU-GB9ua7FNIWv-CgcVWo5mg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1074331513431-0lip7p4s5eh96525deq1afntjoqoqk07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
