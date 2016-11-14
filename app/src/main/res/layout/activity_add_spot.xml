@@ -6,29 +6,30 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="net.dentare.akibamapandroid.activity.AddSpotActivity">
-
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?attr/actionBarSize"
         android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
-
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:layout_collapseMode="pin"
             app:popupTheme="@style/AppTheme.NoActionBar.PopupOverlay" />
-
     </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_add_spot" />
-
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/nestedScrollView"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <include layout="@layout/content_add_spot" />
+    </android.support.v4.widget.NestedScrollView>
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
-
+        android:layout_margin="16dp"
+        app:srcCompat="@drawable/ic_send_white"
+        app:layout_anchor="@+id/nestedScrollView"
+        app:layout_anchorGravity="bottom|right|end"/>
 </android.support.design.widget.CoordinatorLayout>

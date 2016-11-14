@@ -8,5 +8,19 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="category_all_shop">全ての店</string>
+    <string name="category_electric_shop">電気店</string>
+    <string name="category_cafe_shop">喫茶店</string>
+    <string name="category_restaurant">レストラン</string>
+    <string name="category_hotel">ホテル</string>
+    <string name="nav_logout">ログアウト</string>
+    <string name="nav_login">ログイン</string>
+    <string name="nav_settings">設定</string>
+    <string name="nav_add_spot">スポットを追加</string>
+    <string name="nav_ranking">ランキング</string>
+    <string name="nav_exit">終了</string>
+    <string name="nav_other">その他</string>
+    <string name="profile_default_id">ログインしていません</string>
+    <string name="profile_default_id_template">ID:%1$s</string>
+    <string name="profile_default_name">名無し</string>
 </resources>

@@ -39,7 +39,7 @@ import net.dentare.akibamapandroid.R;
 
 import io.fabric.sdk.android.Fabric;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends BaseSubActivity{
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
