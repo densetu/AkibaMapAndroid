@@ -23,4 +23,5 @@
     <string name="profile_default_id">ログインしていません</string>
     <string name="profile_default_id_template">ID:%1$s</string>
     <string name="profile_default_name">名無し</string>
+    <string name="title_activity_details">DetailsActivity</string>
 </resources>

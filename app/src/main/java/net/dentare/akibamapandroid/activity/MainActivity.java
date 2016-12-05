@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navigationView.setCheckedItem(R.id.nav_all_shop);
+
         navigationHeaderView = navigationView.getHeaderView(navigationView.getHeaderCount()-1);
         if (navigationHeaderView != null) navigationHeaderView.setOnClickListener(new View.OnClickListener() {
             @Override
