@@ -4,7 +4,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-public class BaseSubActivity extends AppCompatActivity {
+public class BaseSubActivity extends BaseActivity {
     @Override
     protected void onStart() {
         super.onStart();

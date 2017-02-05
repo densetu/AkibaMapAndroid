@@ -1,107 +1,147 @@
 package net.dentare.akibamapandroid.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthConfig;
 
 import net.dentare.akibamapandroid.R;
+import net.dentare.akibamapandroid.resources.Category;
+import net.dentare.akibamapandroid.resources.Spot;
+import net.dentare.akibamapandroid.util.Config;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback{
+import de.hdodenhof.circleimageview.CircleImageView;
+
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback{
+    private final List<Category> categoryList = new LinkedList<>();
+    private final List<Spot> spotList = new LinkedList<>();
+    private final HashMap<Long,Marker> markerList = new HashMap<>();
     private FirebaseUser mUser;
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            mUser = user;
-            if (navigationHeaderView != null) {
-                ImageView iconImageView = (ImageView) navigationHeaderView.findViewById(R.id.profile_icon);
-                TextView nameTextView = (TextView) navigationHeaderView.findViewById(R.id.profile_name);
-                TextView idTextView = (TextView) navigationHeaderView.findViewById(R.id.profile_id);
-                if (user == null){
-                    iconImageView.setImageResource(R.drawable.ic_account_box_black);
-                    nameTextView.setText(R.string.profile_default_name);
-                    idTextView.setText(R.string.profile_default_id);
-                } else {
-                    Uri uri = user.getPhotoUrl();
-                    String name = user.getDisplayName();
-                    if (uri != null) Picasso.with(MainActivity.this).load(uri).into(iconImageView);
-                    if (name != null) nameTextView.setText(name);
-                    idTextView.setText(getString(R.string.profile_default_id_template,user.getUid()));
-                }
-            }
-            hideProgressDialog();
-        }
-    };
-    private ProgressDialog mProgressDialog;
     private GoogleMap map;
     private View navigationHeaderView;
+    private long nowSelectCategory = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
-        TwitterAuthConfig authConfig =  new TwitterAuthConfig(getString(R.string.twitter_consumer_key), getString(R.string.twitter_consumer_secret));
-        Fabric.with(this, new Twitter(authConfig));
-
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mAuth = FirebaseAuth.getInstance();
+        setAuthListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                mUser = user;
+                if (navigationHeaderView != null) {
+                    CircleImageView iconImageView = (CircleImageView) navigationHeaderView.findViewById(R.id.profile_icon);
+                    TextView nameTextView = (TextView) navigationHeaderView.findViewById(R.id.profile_name);
+                    TextView idTextView = (TextView) navigationHeaderView.findViewById(R.id.profile_id);
+                    if (user == null){
+                        iconImageView.setVisibility(View.GONE);
+                        nameTextView.setText(R.string.profile_default_name);
+                        idTextView.setText(R.string.profile_default_id);
+                    } else {
+                        iconImageView.setVisibility(View.VISIBLE);
+                        Uri uri = user.getPhotoUrl();
+                        String name = user.getDisplayName();
+                        if (uri != null) Picasso.with(MainActivity.this).load(uri).into(iconImageView);
+                        if (name != null) nameTextView.setText(name);
+                        idTextView.setText(getString(R.string.profile_default_id_template,user.getUid()));
+                    }
+                }
+                setCategoryList();
+                hideProgressDialog();
+                isVisibleMenuLoginLogout(user != null);
+            }
+        });
 
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        navigationView.setCheckedItem(R.id.nav_all_shop);
+        final DatabaseReference database = getDatabase();
+
+        database.child(Config.firebaseSpot).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<List<Spot>> type = new GenericTypeIndicator<List<Spot>>(){};
+                List<Spot> tmp = dataSnapshot.getValue(type);
+                if (tmp == null)
+                    return;
+                synchronized (spotList) {
+                    spotList.clear();
+                    spotList.addAll(tmp);
+
+                    if (map == null)
+                        return;
+                    for (int i = 0; i < spotList.size(); i++) {
+                        Spot spot = spotList.get(i);
+                        Marker marker = markerList.get(spot.getId());
+                        if ( marker != null) {
+                            marker.setTitle(spot.getName());
+                            marker.setVisible(getCheckCategory(spot));
+                            marker.setPosition(new LatLng(spot.getLat(),spot.getLng()));
+                            marker.setVisible(getCheckCategory(spot));
+                            continue;
+                        }
+                        MarkerOptions options = new MarkerOptions();
+                        options.title(spot.getName());
+                        options.position(new LatLng(spot.getLat(),spot.getLng()));
+                        options.visible(getCheckCategory(spot));
+                        marker = map.addMarker(options);
+                        markerList.put(spot.getId(),marker);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
 
         navigationHeaderView = navigationView.getHeaderView(navigationView.getHeaderCount()-1);
         if (navigationHeaderView != null) navigationHeaderView.setOnClickListener(new View.OnClickListener() {
@@ -110,37 +150,72 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (mUser != null) startIntent(ProfileActivity.class);
             }
         });
+
+        setCategoryList();
     }
 
+    private void setCategoryList(){
+        final FirebaseUser user = getAuth().getCurrentUser();
+        final DatabaseReference database = getDatabase();
+        if (user != null) database.child(Config.firebaseAdmin).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                setCategoryListStep2(dataSnapshot.getValue(boolean.class));
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
+            }
+        });
+        else setCategoryListStep2(false);
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null)
-            mAuth.removeAuthStateListener(mAuthListener);
+    private void isVisibleMenuLoginLogout(boolean isLogin){
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView == null) return;
+        Menu menu = navigationView.getMenu();
+        if (menu == null) return;
+        MenuItem menuLogin = menu.findItem(R.id.nav_login);
+        if (menuLogin != null) menuLogin.setVisible(!isLogin);
+        MenuItem menuLogout = menu.findItem(R.id.nav_logout);
+        if (menuLogout != null) menuLogout.setVisible(isLogin);
     }
 
-    public void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage(getString(R.string.now_loading));
-            mProgressDialog.setIndeterminate(true);
-        }
+    private void setCategoryListStep2(final boolean value){
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        getDatabase().child(Config.firebaseCategory).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<List<Category>> type = new GenericTypeIndicator<List<Category>>(){};
+                List<Category> tmp = dataSnapshot.getValue(type);
+                if (tmp == null)
+                    return;
+                synchronized (categoryList) {
+                    categoryList.clear();
+                    categoryList.addAll(tmp);
 
-        mProgressDialog.show();
-    }
+                    Menu menu = navigationView.getMenu();
+                    menu.clear();
+                    menu.setGroupCheckable(R.id.nav_category, true, true);
+                    for (int i = 0; i < categoryList.size(); i++) {
+                        Category category = categoryList.get(i);
+                        MenuItem menuItem = menu.add(R.id.nav_category, (int) category.getId(), Menu.NONE, category.getName());
+                        menuItem.setCheckable(true);
+                        menuItem.setChecked(i == nowSelectCategory);
+                        menuItem.setIcon(R.drawable.ic_place_black);
+                    }
+                    getMenuInflater().inflate(R.menu.activity_main_drawer, menu);
+                    menu.findItem(R.id.nav_add_spot).setVisible(value);
+                    isVisibleMenuLoginLogout(mUser != null);
+                }
+            }
 
-    public void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -152,28 +227,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void startIntent(Class myClass){
         Intent intent = new Intent(MainActivity.this,myClass);
         startActivity(intent);
@@ -181,32 +234,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_all_shop) {
-
-        } else if (id == R.id.nav_electric_shop) {
-
-        } else if (id == R.id.nav_cafe_shop) {
-
-        } else if (id == R.id.nav_restaurant_shop) {
-
-        } else if (id == R.id.nav_hotel_shop) {
-
-        } else if (id == R.id.nav_add_spot) {
+        for (Category category : categoryList) {
+            if (category.getId() == id) {
+                nowSelectCategory = id;
+                checkCategoryAndSetMarker();
+                break;
+            }
+        }
+        if (id == R.id.nav_add_spot) {
             startIntent(AddSpotActivity.class);
         } else if (id == R.id.nav_ranking) {
             startIntent(RankingActivity.class);
         } else if (id == R.id.nav_login && mUser == null) {
             startIntent(LoginActivity.class);
         } else if (id == R.id.nav_logout && mUser != null) {
-            mAuth.signOut();
+            getAuth().signOut();
             LoginManager.getInstance().logOut();
             Twitter.logOut();
-        } else if (id == R.id.nav_settings) {
-
         } else if (id == R.id.nav_exit) {
             finish();
             return true;
@@ -218,8 +265,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void onMapReady(GoogleMap map) {
-        this.map = map;
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.698353f,139.7709256f),17.0f));
+    public void onMapReady(GoogleMap googleMap) {
+        this.map = googleMap;
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                for (Map.Entry<Long,Marker> entry: markerList.entrySet()) {
+                    Log.d("debug1",String.valueOf(entry.getValue()));
+                    Log.d("debug1",String.valueOf(marker));
+                    if (entry.getValue().equals(marker)){
+                        Log.d("tmx",String.valueOf(entry.getKey()));
+                        Intent intent = new Intent(MainActivity.this,DetailsActivity.class);
+                        intent.putExtra("id",entry.getKey());
+                        startActivity(intent);
+                    }
+                }
+            }
+        });
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(Config.akiba_lat,Config.akiba_lng),Config.akiba_z));
+    }
+
+    private boolean getCheckCategory(Spot spot){
+        boolean flag = false;
+        if (nowSelectCategory == 0) return true;
+        for (long id: spot.getCategoryId()){
+            if (nowSelectCategory == id) {
+                flag = true;
+                break;
+            }
+        }
+        return flag;
+    }
+
+    private void checkCategoryAndSetMarker(){
+        for (Spot spot:spotList) {
+            Marker marker = markerList.get(spot.getId());
+            if (marker != null)
+                marker.setVisible(getCheckCategory(spot));
+        }
     }
 }

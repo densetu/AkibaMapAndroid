@@ -1,21 +1,26 @@
 package net.dentare.akibamapandroid.resources;
 
 public class Category {
-    private int id;
+    private long id;
     private String name;
-    private int parentId;
+    private String english;
+    private long parentId;
 
-    public Category(int id, String name, int parentId) {
+    public Category(long id, String name, String english, long parentId) {
         this.id = id;
         this.name = name;
+        this.english = english;
         this.parentId = parentId;
     }
 
-    public int getId() {
+    public Category() {
+    }
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -27,11 +32,19 @@ public class Category {
         this.name = name;
     }
 
-    public int getParentId() {
+    public String getEnglish() {
+        return english;
+    }
+
+    public void setEnglish(String english) {
+        this.english = english;
+    }
+
+    public long getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(long parentId) {
         this.parentId = parentId;
     }
 }

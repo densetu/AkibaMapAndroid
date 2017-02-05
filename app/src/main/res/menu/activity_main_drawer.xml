@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_all_shop"
-            android:icon="@drawable/ic_place_black"
-            android:title="@string/category_all_shop" />
-        <item
-            android:id="@+id/nav_electric_shop"
-            android:icon="@drawable/ic_desktop_windows_black"
-            android:title="@string/category_electric_shop" />
-        <item
-            android:id="@+id/nav_cafe_shop"
-            android:icon="@drawable/ic_local_cafe_black"
-            android:title="@string/category_cafe_shop" />
-        <item
-            android:id="@+id/nav_restaurant_shop"
-            android:icon="@drawable/ic_restaurant_black"
-            android:title="@string/category_restaurant" />
-        <item
-            android:id="@+id/nav_hotel_shop"
-            android:icon="@drawable/ic_local_hotel_black"
-            android:title="@string/category_hotel" />
-    </group>
-
+    <group android:id="@+id/nav_category" />
     <item android:title="@string/nav_other">
         <menu>
             <item
@@ -42,10 +19,6 @@
                 android:id="@+id/nav_logout"
                 android:icon="@drawable/ic_account_box_black"
                 android:title="@string/nav_logout" />
-            <item
-                android:id="@+id/nav_settings"
-                android:icon="@drawable/ic_settings_black"
-                android:title="@string/nav_settings" />
             <item
                 android:id="@+id/nav_exit"
                 android:icon="@drawable/ic_exit_to_app_black"

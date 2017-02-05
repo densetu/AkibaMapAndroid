@@ -8,4 +8,14 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
+    <dimen name="details_map_height">240dp</dimen>
+    <dimen name="image_fragment_height">160dp</dimen>
+    <dimen name="image_fragment_image_height">152dp</dimen>
+    <dimen name="image_fragment_margin">4dp</dimen>
+    <dimen name="stroke_padding">4.5dp</dimen>
+    <dimen name="stroke_radius">3dp</dimen>
+    <dimen name="stroke_border">1.5dp</dimen>
+    <dimen name="stroke_margin">1.5dp</dimen>
+    <dimen name="ranking_fragment_size">48dp</dimen>
+    <dimen name="ranking_fragment_text_size">24dp</dimen>
 </resources>

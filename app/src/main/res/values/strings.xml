@@ -19,9 +19,25 @@
     <string name="nav_add_spot">スポットを追加</string>
     <string name="nav_ranking">ランキング</string>
     <string name="nav_exit">終了</string>
+    <string name="okay">OK</string>
     <string name="nav_other">その他</string>
     <string name="profile_default_id">ログインしていません</string>
     <string name="profile_default_id_template">ID:%1$s</string>
     <string name="profile_default_name">名無し</string>
-    <string name="title_activity_details">DetailsActivity</string>
+    <string name="add_spot_category_not_found">カテゴリなし</string>
+    <string name="add_spot_category_not_found_message">カテゴリを1つ以上選択してください</string>
+    <string name="add_spot_pin_not_found">地図をタップしてピンを刺してください</string>
+    <string name="add_spot_required_blank">すべての項目に文字を入力してください。</string>
+    <string name="add_spot_url_not_match">URLが不正です</string>
+    <string name="add_spot_image_not_found_or_photo_x1_less">画像は1枚以上添付してください</string>
+    <string name="add_spot_name">スポット名</string>
+    <string name="add_spot_address">住所</string>
+    <string name="add_spot_details">詳細説明</string>
+    <string name="add_spot_category">カテゴリ</string>
+    <string name="add_spot_category_select">カテゴリ選択</string>
+    <string name="add_spot_url">URL</string>
+    <string name="add_spot_search">検索</string>
+    <string name="add_spot_image">画像</string>
+    <string name="add_spot_image_select">画像選択</string>
+    <string name="ranking_fragment_adapter_views">View:%1$d</string>
 </resources>
