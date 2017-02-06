@@ -45,16 +45,11 @@ public class ImageSwipeAdapter extends RecyclerView.Adapter<ImageSwipeAdapter.Vi
         if (spotImages != null && spotImages.size() > position && spotImages.get(position) != null) {
             SpotImage spotImage = spotImages.get(position);
             String url = spotImage.getUrl();
-            if (url.startsWith(Config.localImageSpacer)){
-                url = url.replaceFirst(Config.localImageSpacer,"");
-                File file = new File(url);
-                if (file.exists())
-                    Picasso.with(context).load(file).into(holder.imageViewMain);
-            }else {
-                if (url.startsWith(Config.firebaseImageSpacer))
+            if (url.startsWith(Config.firebaseImageSpacer))
                     url = url.replaceFirst(Config.firebaseImageSpacer,"");
-                Picasso.with(context).load(url).into(holder.imageViewMain);
-            }
+            if (url.startsWith(Config.localImageSpacer))
+                url = url.replaceFirst(Config.localImageSpacer,"");
+            Picasso.with(context).load(url).into(holder.imageViewMain);
         }
 
         final int p = position;
