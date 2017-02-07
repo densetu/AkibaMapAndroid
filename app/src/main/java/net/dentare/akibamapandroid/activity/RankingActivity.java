@@ -29,7 +29,6 @@ import java.util.List;
 
 public class RankingActivity extends BaseSubActivity {
     private RankingPagerAdapter adapter;
-    private ViewPager viewPager;
     private ValueEventListener listener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
@@ -50,7 +49,7 @@ public class RankingActivity extends BaseSubActivity {
         setContentView(R.layout.activity_ranking);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         if (viewPager == null) viewPager = (ViewPager) findViewById(R.id.viewPager);
         if (viewPager != null){
             adapter = RankingPagerAdapter.getInstance(getSupportFragmentManager());

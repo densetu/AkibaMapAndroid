@@ -50,13 +50,11 @@ public class RankingFragment extends Fragment{
 
         }
     };
-    public static RankingFragment getInstance(SpotRanking ranking){
+
+    public static RankingFragment getInstance(SpotRanking ranking) {
         RankingFragment fragment = new RankingFragment();
         fragment.ranking = ranking;
         return fragment;
-    }
-
-    private RankingFragment() {
     }
 
     @Override

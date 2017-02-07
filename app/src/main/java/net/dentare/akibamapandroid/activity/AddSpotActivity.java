@@ -52,6 +52,7 @@ import net.dentare.akibamapandroid.resources.Spot;
 import net.dentare.akibamapandroid.resources.SpotImage;
 import net.dentare.akibamapandroid.util.Config;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -294,7 +295,7 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
         LatLng latLng = marker.getPosition();
         spot.setLat(latLng.latitude);
         spot.setLng(latLng.longitude);
-        spot.setUserId(user.getUid());
+        if (spot.getUserId() == null) spot.setUserId(user.getUid());
         boolean flag = false;
         for (int i = 0; i < spotImages.size(); i++) {
             final int value = i;
@@ -302,7 +303,7 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
             if (spotImage.getUrl().startsWith(Config.firebaseImageSpacer)) continue;
             else flag = true;
             Uri uri = Uri.parse(spotImage.getUrl());
-            StorageReference access = getStorage().child(Config.firebaseSpot).child(String.valueOf(id)).child(String.valueOf((long)(Math.random() * Long.MAX_VALUE))+"."+MimeTypeMap.getFileExtensionFromUrl(uri.toString()));
+            StorageReference access = getStorage().child(Config.firebaseSpot).child(String.valueOf(id)).child(String.valueOf((long)(Math.random() * Long.MAX_VALUE))+"."+getMIMEType(uri.toString()));
             UploadTask uploadTask = access.putFile(uri);
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -405,9 +406,12 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
             path = uri.toString();
         }
 
-        if ((requestCode == REQUEST_KK_PICTURE_CONTENT || requestCode == REQUEST_PICTURE_CONTENT) && resultCode == RESULT_OK && path != null && spot != null && data.getType().startsWith("image/")) {
-            spot.getImages().add(new SpotImage(Config.localImageSpacer+path));
-            setImages();
+        if ((requestCode == REQUEST_KK_PICTURE_CONTENT || requestCode == REQUEST_PICTURE_CONTENT) && resultCode == RESULT_OK && path != null && spot != null) {
+            String mime = getMIMEType(data.getData().toString());
+            if (mime != null && mime.startsWith("image/")){
+                spot.getImages().add(new SpotImage(Config.localImageSpacer+path));
+                initImages();
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -417,13 +421,6 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
         if (fragment != null && spot != null) {
             fragment.clear();
             fragment.addAll(spot.getImages());
-            fragment.notifyDataSetChanged();
-        }
-    }
-
-    private void setImages(){
-        ImageSwipeFragment fragment = (ImageSwipeFragment) getSupportFragmentManager().findFragmentById(R.id.imageSwipeFragment);
-        if (fragment != null) {
             fragment.notifyDataSetChanged();
         }
     }
@@ -489,5 +486,14 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
             });
             return builder.create();
         }
+    }
+
+    private String getMIMEType(String path){
+        File file = new File(path);
+        String fn = file.getName();
+        int ch = fn.lastIndexOf('.');
+        String ext = (ch>=0)?fn.substring(ch + 1):null;
+        if (ext == null) return null;
+        return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext.toLowerCase());
     }
 }
