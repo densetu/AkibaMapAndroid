@@ -48,13 +48,11 @@ public class MyPostFragment extends Fragment{
 
         }
     };
-    public static MyPostFragment getInstance(String userId){
+
+    public static MyPostFragment getInstance(String userId) {
         MyPostFragment fragment = new MyPostFragment();
         fragment.userId = userId;
         return fragment;
-    }
-
-    private MyPostFragment() {
     }
 
     @Override
