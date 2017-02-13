@@ -160,7 +160,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if (user != null) database.child(Config.firebaseAdmin).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                setCategoryListStep2(dataSnapshot.getValue(boolean.class));
+                setCategoryListStep2(dataSnapshot.exists() ? dataSnapshot.getValue(boolean.class) : false);
             }
 
             @Override
@@ -271,10 +271,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             @Override
             public void onInfoWindowClick(Marker marker) {
                 for (Map.Entry<Long,Marker> entry: markerList.entrySet()) {
-                    Log.d("debug1",String.valueOf(entry.getValue()));
-                    Log.d("debug1",String.valueOf(marker));
                     if (entry.getValue().equals(marker)){
-                        Log.d("tmx",String.valueOf(entry.getKey()));
                         Intent intent = new Intent(MainActivity.this,DetailsActivity.class);
                         intent.putExtra("id",entry.getKey());
                         startActivity(intent);
