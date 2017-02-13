@@ -436,6 +436,7 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
     public void onClickItem(View view, int position) {
         ImageSwipeFragment fragment = (ImageSwipeFragment) getSupportFragmentManager().findFragmentById(R.id.imageSwipeFragment);
         if (fragment != null && fragment.length() > position) {
+            spot.getImages().remove(position);
             fragment.remove(position);
             fragment.notifyDataSetChanged();
         }
