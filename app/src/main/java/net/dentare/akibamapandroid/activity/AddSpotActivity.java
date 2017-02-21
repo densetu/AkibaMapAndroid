@@ -194,7 +194,8 @@ public class AddSpotActivity extends BaseSubActivity implements OnMapReadyCallba
                 getDatabase().child(Config.firebaseAdmin).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (user.getUid() != spot.getUserId() && !dataSnapshot.getValue(boolean.class)){
+                        boolean flag = dataSnapshot.exists() ? dataSnapshot.getValue(boolean.class) : false;
+                        if (user.getUid() != spot.getUserId() && !flag){
                             finish();
                         }
                     }

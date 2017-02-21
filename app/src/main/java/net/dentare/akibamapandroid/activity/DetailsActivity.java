@@ -63,7 +63,7 @@ public class DetailsActivity extends BaseSubActivity implements ImageSwipeFragme
         else database.child(Config.firebaseAdmin).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                boolean value = dataSnapshot.getValue(boolean.class);
+                boolean value = dataSnapshot.exists() ? dataSnapshot.getValue(boolean.class) : false;
                 if (!value)
                     findViewById(R.id.fab).setVisibility(View.GONE);
             }
